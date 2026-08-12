@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 주휴수당 계산기 | 알바 및 파트타임 주휴수당 조회</title>
+  <style>
+    :root { --primary: #d97706; --bg: #f8fafc; --card-bg: #ffffff; --border: #cbd5e1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); padding-bottom: 40px; line-height: 1.5; }
+    
+    .gnb { background: #1e293b; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .gnb .logo { color: #ffffff; font-weight: 800; font-size: 1.15rem; text-decoration: none; }
+    .gnb-menu { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gnb-menu a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; padding: 6px 12px; border-radius: 6px; font-weight: 600; }
+    .gnb-menu a:hover, .gnb-menu a.active { background: #334155; color: #ffffff; }
+
+    .container { max-width: 768px; margin: 24px auto; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    h1 { font-size: 1.65rem; text-align: center; color: #0f172a; margin-bottom: 18px; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.88rem; color: #334155; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+    .btn-calc { width: 100%; padding: 16px; background-color: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 16px; }
+    
+    .result-card { margin-top: 24px; padding: 20px; background-color: #fffbeb; border-left: 5px solid var(--primary); border-radius: 8px; display: none; }
+  </style>
+</head>
+<body>
+  <nav class="gnb">
+    <a href="index.html" class="logo">🧮 스마트 계산기 포털</a>
+    <div class="gnb-menu">
+      <a href="index.html">퇴직소득세</a>
+      <a href="unemployment.html">실업급여</a>
+      <a href="salary.html">연봉 실수령액</a>
+      <a href="weekly-pay.html" class="active">주휴수당</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>⏰ 2026 주휴수당 계산기</h1>
+    <div class="form-group">
+      <label for="hourlyWage">시급 (원)</label>
+      <input type="number" id="hourlyWage" placeholder="예: 10030">
+    </div>
+    <div class="form-group">
+      <label for="weeklyHours">1주일 총 근무시간 (시간)</label>
+      <input type="number" id="weeklyHours" placeholder="예: 20 (최소 15시간 이상)">
+    </div>
+
+    <button type="button" class="btn-calc" onclick="calcWeeklyPay()">주휴수당 계산하기</button>
+
+    <div id="resultCard" class="result-card">
+      <h2 style="font-size:1.1rem; color:#b45309; margin-bottom:8px;">예상 주휴수당</h2>
+      <div id="resWeeklyBonus" style="font-size:1.8rem; font-weight:800; color:#d97706;">0 원</div>
+      <p id="resTotalWeekly" style="font-size:0.95rem; color:#92400e; margin-top:8px; font-weight:600;"></p>
+    </div>
+  </div>
+
+  <script>
+    function calcWeeklyPay() {
+      const wage = parseFloat(document.getElementById('hourlyWage').value) || 0;
+      const hours = parseFloat(document.getElementById('weeklyHours').value) || 0;
+
+      if (!wage || !hours) { alert('시급과 근무시간을 입력해 주세요.'); return; }
+
+      if (hours < 15) {
+        alert('주 15시간 미만 근로자는 관련 법상 주휴수당 지급 대상이 아닙니다.');
+        return;
+      }
+
+      // 주휴수당 공식: (주 근무시간 / 40시간) * 8시간 * 시급 (최대 40시간 한도)
+      const validHours = Math.min(40, hours);
+      const weeklyBonus = Math.floor((validHours / 40) * 8 * wage);
+      const basePay = Math.floor(hours * wage);
+      const totalWeekly = basePay + weeklyBonus;
+
+      document.getElementById('resWeeklyBonus').innerText = weeklyBonus.toLocaleString() + ' 원';
+      document.getElementById('resTotalWeekly').innerText = `기본 주급(${basePay.toLocaleString()}원) + 주휴수당 = 총 주급: ${totalWeekly.toLocaleString()} 원`;
+      document.getElementById('resultCard').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
