@@ -55,7 +55,38 @@
       <p id="resTotalWeekly" style="font-size:0.95rem; color:#92400e; margin-top:8px; font-weight:600;"></p>
     </div>
   </div>
+<!-- 계산 결과 카드 영역 -->
+    <div id="resultCard" class="result-card">
+      <h2>📊 계산 결과 요약</h2>
+      <div class="res-row"><span>총 퇴직급여 (세전)</span><span id="resGross" style="font-weight:700;">0 원</span></div>
+      <div class="res-row sub"><span>• 근속연수</span><span id="resServiceYear">-</span></div>
+      <div class="res-row sub" style="color:#dc2626;"><span>• 예상 퇴직소득세 + 지방세</span><span id="resTax">- 0 원</span></div>
+      <div class="res-row total"><span>최종 세후 실수령액</span><span id="resNet">0 원</span></div>
+    </div>
 
+    <!-- 🔥 [추천 위치 1] 결과창 바로 아래에 쿠팡 배너 배치 🔥 -->
+    <div style="margin-top: 24px; padding: 16px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+      <p style="font-size: 0.9rem; font-weight: 700; color: #334155; margin-bottom: 12px;">
+        🛍️ 실시간 쿠팡 인기 핫딜 상품
+      </p>
+
+      <script src="https://ads-partners.coupang.com/g.js"></script>
+      <script>
+        new PartnersCoupang.G({
+          "id": 1016800,
+          "template": "carousel",
+          "trackingCode": "AF0325602",
+          "width": "680",
+          "height": "140",
+          "tsource": ""
+        });
+      </script>
+
+      <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 10px;">
+        이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+      </p>
+    </div>
+    <!-- 🔥 쿠팡 배너 영역 끝 🔥 -->
   <script>
     function calcWeeklyPay() {
       const wage = parseFloat(document.getElementById('hourlyWage').value) || 0;
