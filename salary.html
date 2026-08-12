@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 연봉 실수령액 계산기 | 4대보험 및 공제 세금 산출</title>
+  <style>
+    :root { --primary: #2563eb; --bg: #f8fafc; --card-bg: #ffffff; --border: #cbd5e1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); padding-bottom: 40px; line-height: 1.5; }
+    
+    .gnb { background: #1e293b; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .gnb .logo { color: #ffffff; font-weight: 800; font-size: 1.15rem; text-decoration: none; }
+    .gnb-menu { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gnb-menu a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; padding: 6px 12px; border-radius: 6px; font-weight: 600; }
+    .gnb-menu a:hover, .gnb-menu a.active { background: #334155; color: #ffffff; }
+
+    .container { max-width: 768px; margin: 24px auto; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    h1 { font-size: 1.65rem; text-align: center; color: #0f172a; margin-bottom: 18px; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.88rem; color: #334155; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+    .btn-calc { width: 100%; padding: 16px; background-color: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 16px; }
+    
+    .result-card { margin-top: 24px; padding: 24px; background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; display: none; }
+    .res-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.92rem; }
+    .res-row.sub { padding-left: 12px; font-size: 0.85rem; color: #64748b; }
+    .res-row.total { font-size: 1.25rem; font-weight: 800; color: #1e40af; border-top: 2px dashed #cbd5e1; padding-top: 12px; margin-top: 12px; }
+  </style>
+</head>
+<body>
+  <nav class="gnb">
+    <a href="index.html" class="logo">🧮 스마트 계산기 포털</a>
+    <div class="gnb-menu">
+      <a href="index.html">퇴직소득세</a>
+      <a href="unemployment.html">실업급여</a>
+      <a href="salary.html" class="active">연봉 실수령액</a>
+      <a href="weekly-pay.html">주휴수당</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>💳 2026 연봉 실수령액 계산기</h1>
+    <div class="form-group">
+      <label for="annualSalary">희망/계약 연봉 (원)</label>
+      <input type="number" id="annualSalary" placeholder="예: 40000000">
+    </div>
+    <div class="form-group">
+      <label for="nonTaxable">월 비과세액 (식대 등 기본 20만 원)</label>
+      <input type="number" id="nonTaxable" value="200000">
+    </div>
+    <div class="form-group">
+      <label for="dependents">부양가족 수 (본인 포함)</label>
+      <input type="number" id="dependents" value="1">
+    </div>
+
+    <button type="button" class="btn-calc" onclick="calcSalary()">실수령액 계산하기</button>
+
+    <div id="resultCard" class="result-card">
+      <h2 style="font-size:1.15rem; color:#1e293b; margin-bottom:12px;">📊 월 수령액 상세 내역</h2>
+      <div class="res-row"><span>월 기본급 (세전)</span><span id="resMonthlyGross" style="font-weight:700;">0 원</span></div>
+      
+      <div class="res-row sub"><span>• 국민연금 (4.5%)</span><span id="resNationalPension">- 0 원</span></div>
+      <div class="res-row sub"><span>• 건강보험 (3.545%)</span><span id="resHealthInsurance">- 0 원</span></div>
+      <div class="res-row sub"><span>• 장기요양 (건강보험의 12.95%)</span><span id="resLongtermCare">- 0 원</span></div>
+      <div class="res-row sub"><span>• 고용보험 (0.9%)</span><span id="resEmploymentInsurance">- 0 원</span></div>
+      <div class="res-row sub"><span>• 근로소득세 (추정)</span><span id="resIncomeTax">- 0 원</span></div>
+      <div class="res-row sub"><span>• 지방소득세 (10%)</span><span id="resLocalTax">- 0 원</span></div>
+      
+      <div class="res-row" style="color:#b91c1c; font-weight:700; margin-top:8px;">
+        <span>공제액 합계</span><span id="resTotalDeduction">- 0 원</span>
+      </div>
+
+      <div class="res-row total">
+        <span>월 예상 실수령액</span>
+        <span id="resNetMonthly">0 원</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function calcSalary() {
+      const annual = parseFloat(document.getElementById('annualSalary').value) || 0;
+      const nonTaxable = parseFloat(document.getElementById('nonTaxable').value) || 0;
+      
+      if (annual <= 0) { alert('연봉을 입력해 주세요.'); return; }
+
+      const monthlyGross = Math.floor(annual / 12);
+      const taxableMonthly = Math.max(0, monthlyGross - nonTaxable);
+
+      // 4대보험 근로자 부담율
+      const np = Math.floor(Math.min(taxableMonthly, 5900000) * 0.045); // 국민연금 상한액 기준
+      const hi = Math.floor(taxableMonthly * 0.03545);
+      const lt = Math.floor(hi * 0.1295);
+      const ei = Math.floor(taxableMonthly * 0.009);
+
+      // 근로소득세 누진 간이 추정치
+      let incomeTax = 0;
+      if (taxableMonthly > 3000000) incomeTax = taxableMonthly * 0.08;
+      else if (taxableMonthly > 2000000) incomeTax = taxableMonthly * 0.04;
+      else incomeTax = taxableMonthly * 0.015;
+
+      const localTax = Math.floor(incomeTax * 0.1);
+      const totalDeduction = np + hi + lt + ei + incomeTax + localTax;
+      const netMonthly = monthlyGross - totalDeduction;
+
+      document.getElementById('resMonthlyGross').innerText = monthlyGross.toLocaleString() + ' 원';
+      document.getElementById('resNationalPension').innerText = '- ' + np.toLocaleString() + ' 원';
+      document.getElementById('resHealthInsurance').innerText = '- ' + hi.toLocaleString() + ' 원';
+      document.getElementById('resLongtermCare').innerText = '- ' + lt.toLocaleString() + ' 원';
+      document.getElementById('resEmploymentInsurance').innerText = '- ' + ei.toLocaleString() + ' 원';
+      document.getElementById('resIncomeTax').innerText = '- ' + Math.floor(incomeTax).toLocaleString() + ' 원';
+      document.getElementById('resLocalTax').innerText = '- ' + localTax.toLocaleString() + ' 원';
+      document.getElementById('resTotalDeduction').innerText = '- ' + totalDeduction.toLocaleString() + ' 원';
+      document.getElementById('resNetMonthly').innerText = netMonthly.toLocaleString() + ' 원';
+
+      document.getElementById('resultCard').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
