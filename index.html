@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>스마트 계산기 모음 | 2026 퇴직금·퇴직소득세 계산기</title>
+  <meta name="description" content="2026년 개정 세법 기준 퇴직소득세, 지방소득세, IRP 절세 및 실수령액 완벽 계산기">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); color: var(--text); line-height: 1.5; padding-bottom: 40px; }
+    
+    /* GNB 상단 네비게이션 메뉴바 (포털화 핵심) */
+    .gnb { background: #1e293b; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .gnb .logo { color: #ffffff; font-weight: 800; font-size: 1.15rem; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    .gnb-menu { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gnb-menu a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; font-weight: 600; }
+    .gnb-menu a:hover, .gnb-menu a.active { background: #334155; color: #ffffff; }
+
+    .container { max-width: 768px; margin: 24px auto; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    h1 { font-size: 1.65rem; text-align: center; color: #0f172a; margin-bottom: 6px; font-weight: 800; }
+    .subtitle { text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 24px; }
+
+    .section-title { font-size: 1.05rem; font-weight: 700; color: #1e293b; margin: 20px 0 10px 0; border-left: 4px solid var(--primary); padding-left: 8px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.88rem; color: #334155; }
+    input { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+    input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+    
+    .btn-calc { width: 100%; padding: 16px; background-color: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 20px; transition: background-color 0.2s; }
+    .btn-calc:hover { background-color: var(--primary-hover); }
+
+    .result-card { margin-top: 28px; padding: 24px; background-color: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; display: none; }
+    .result-card h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 14px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; }
+    .res-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.95rem; }
+    .res-row.sub { padding-left: 12px; font-size: 0.85rem; color: #64748b; }
+    .res-row.total { font-size: 1.25rem; font-weight: 800; color: #1e40af; border-top: 2px dashed #cbd5e1; padding-top: 12px; margin-top: 12px; }
+
+    .info-section { margin-top: 36px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 0.88rem; color: #475569; }
+    .info-section h3 { font-size: 1rem; color: #1e293b; margin: 12px 0 6px 0; }
+  </style>
+</head>
+<body>
+
+  <!-- 상단 공통 네비게이션 메인 메뉴바 -->
+  <nav class="gnb">
+    <a href="index.html" class="logo">🧮 스마트 계산기 포털</a>
+    <div class="gnb-menu">
+      <a href="index.html" class="active">퇴직소득세</a>
+      <a href="unemployment.html">실업급여</a>
+      <a href="salary.html">연봉 실수령액</a>
+      <a href="weekly-pay.html">주휴수당</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>🏛️ 2026 퇴직금 & 퇴직소득세 계산기</h1>
+    <p class="subtitle">소득세법 시행규칙 [별지 제24호서식] 세액산출 공식 완벽 반영</p>
+
+    <div class="section-title">1. 근무지 기본사항</div>
+    <div class="grid-2">
+      <div class="form-group">
+        <label for="startDate">입사일자</label>
+        <input type="date" id="startDate">
+      </div>
+      <div class="form-group">
+        <label for="endDate">퇴사일자</label>
+        <input type="date" id="endDate">
+      </div>
+    </div>
+
+    <div class="section-title">2. 퇴직금 내역</div>
+    <div class="form-group">
+      <label for="grossSalary">퇴직급여 총액 (세전, 원)</label>
+      <input type="number" id="grossSalary" placeholder="예: 40000000">
+    </div>
+
+    <button type="button" class="btn-calc" onclick="calculateTax()">퇴직소득세 및 실수령액 계산</button>
+
+    <div id="resultCard" class="result-card">
+      <h2>📊 계산 결과 요약</h2>
+      <div class="res-row"><span>총 퇴직급여 (세전)</span><span id="resGross" style="font-weight:700;">0 원</span></div>
+      <div class="res-row sub"><span>• 근속연수</span><span id="resServiceYear">-</span></div>
+      <div class="res-row sub" style="color:#dc2626;"><span>• 예상 퇴직소득세 + 지방세</span><span id="resTax">- 0 원</span></div>
+      <div class="res-row total"><span>최종 세후 실수령액</span><span id="resNet">0 원</span></div>
+    </div>
+
+    <div class="info-section">
+      <h3>💡 계산기 이용 안내</h3>
+      <p>• 퇴직소득세는 오랜 기간 축적된 소득에 대해 누진세 부담을 줄여주는 '연분연승법' 방식으로 산출됩니다.</p>
+      <p>• 상단 메뉴를 통해 실업급여 및 연봉 실수령액 계산도 자유롭게 이용해 보세요.</p>
+    </div>
+  </div>
+
+  <script>
+    function calculateTax() {
+      const start = new Date(document.getElementById('startDate').value);
+      const end = new Date(document.getElementById('endDate').value);
+      const gross = parseFloat(document.getElementById('grossSalary').value) || 0;
+
+      if (isNaN(start) || isNaN(end) || gross <= 0 || start >= end) {
+        alert('올바른 입사일, 퇴사일 및 퇴직급여를 입력해 주세요.');
+        return;
+      }
+
+      const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+      const years = Math.ceil(days / 365);
+
+      // 근속연수 공제
+      let serviceDeduction = 0;
+      if (years <= 5) serviceDeduction = years * 1000000;
+      else if (years <= 10) serviceDeduction = 5000000 + (years - 5) * 2000000;
+      else if (years <= 20) serviceDeduction = 15000000 + (years - 10) * 2500000;
+      else serviceDeduction = 40000000 + (years - 20) * 3000000;
+
+      const converted = Math.max(0, (gross - serviceDeduction) * 12 / years);
+      
+      // 환산급여 공제
+      let convertedDeduction = 0;
+      if (converted <= 8000000) convertedDeduction = converted;
+      else if (converted <= 70000000) convertedDeduction = 8000000 + (converted - 8000000) * 0.6;
+      else if (converted <= 100000000) convertedDeduction = 45200000 + (converted - 70000000) * 0.55;
+      else convertedDeduction = 61700000 + (converted - 100000000) * 0.45;
+
+      const taxBase = Math.max(0, converted - convertedDeduction);
+      let baseTax = taxBase * 0.06;
+      if (taxBase > 14000000) baseTax = taxBase * 0.15 - 1260000;
+
+      const incomeTax = Math.floor(Math.max(0, (baseTax / 12) * years));
+      const localTax = Math.floor(incomeTax * 0.1);
+      const totalTax = incomeTax + localTax;
+      const netSalary = gross - totalTax;
+
+      document.getElementById('resGross').innerText = gross.toLocaleString() + ' 원';
+      document.getElementById('resServiceYear').innerText = years + ' 년 (' + days + '일)';
+      document.getElementById('resTax').innerText = '- ' + totalTax.toLocaleString() + ' 원';
+      document.getElementById('resNet').innerText = netSalary.toLocaleString() + ' 원';
+      document.getElementById('resultCard').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

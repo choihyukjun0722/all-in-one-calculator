@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026 실업급여 계산기 | 구직급여 수급액 조회</title>
+  <style>
+    :root { --primary: #059669; --bg: #f8fafc; --card-bg: #ffffff; --border: #cbd5e1; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background-color: var(--bg); padding-bottom: 40px; line-height: 1.5; }
+    .gnb { background: #1e293b; padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .gnb .logo { color: #ffffff; font-weight: 800; font-size: 1.15rem; text-decoration: none; }
+    .gnb-menu { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gnb-menu a { color: #cbd5e1; text-decoration: none; font-size: 0.9rem; padding: 6px 12px; border-radius: 6px; font-weight: 600; }
+    .gnb-menu a:hover, .gnb-menu a.active { background: #334155; color: #ffffff; }
+    .container { max-width: 768px; margin: 24px auto; background: var(--card-bg); padding: 32px 24px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    h1 { font-size: 1.65rem; text-align: center; color: #0f172a; margin-bottom: 18px; font-weight: 800; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-weight: 600; margin-bottom: 4px; font-size: 0.88rem; color: #334155; }
+    input, select { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.95rem; }
+    .btn-calc { width: 100%; padding: 16px; background-color: var(--primary); color: #fff; border: none; border-radius: 8px; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-top: 16px; }
+    .result-card { margin-top: 24px; padding: 20px; background-color: #ecfdf5; border-left: 5px solid var(--primary); border-radius: 8px; display: none; }
+  </style>
+</head>
+<body>
+  <nav class="gnb">
+    <a href="index.html" class="logo">🧮 스마트 계산기 포털</a>
+    <div class="gnb-menu">
+      <a href="index.html">퇴직소득세</a>
+      <a href="unemployment.html" class="active">실업급여</a>
+      <a href="salary.html">연봉 실수령액</a>
+      <a href="weekly-pay.html">주휴수당</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h1>💼 2026 실업급여 계산기</h1>
+    <div class="form-group">
+      <label for="age">퇴사 당시 나이 (만 나이)</label>
+      <input type="number" id="age" placeholder="예: 35">
+    </div>
+    <div class="form-group">
+      <label for="period">고용보험 가입 기간</label>
+      <select id="period">
+        <option value="1">1년 미만</option>
+        <option value="3">1년 이상 ~ 3년 미만</option>
+        <option value="5">3년 이상 ~ 5년 미만</option>
+        <option value="10">5년 이상 ~ 10년 미만</option>
+        <option value="99">10년 이상</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="avgPay">퇴직 전 3개월 평균 월급 (세전, 원)</label>
+      <input type="number" id="avgPay" placeholder="예: 3000000">
+    </div>
+
+    <button type="button" class="btn-calc" onclick="calcUnemployment()">예상 실업급여 계산하기</button>
+
+    <div id="resultCard" class="result-card">
+      <h2 style="font-size:1.1rem; color:#065f46; margin-bottom:8px;">예상 총 수급액</h2>
+      <div id="resTotal" style="font-size:1.8rem; font-weight:800; color:#047857;">0 원</div>
+      <p id="resDays" style="font-size:0.9rem; color:#047857; margin-top:4px;"></p>
+    </div>
+  </div>
+
+  <script>
+    function calcUnemployment() {
+      const age = parseInt(document.getElementById('age').value) || 0;
+      const period = parseInt(document.getElementById('period').value);
+      const pay = parseFloat(document.getElementById('avgPay').value) || 0;
+
+      if (!age || !pay) { alert('나이와 월급을 입력해 주세요.'); return; }
+
+      // 2026년 기준 1일 상한액 66,000원, 하한액 약 63,104원 (8시간 기준)
+      const dailyAvg = (pay / 30) * 0.6;
+      let dailyPay = Math.max(63104, Math.min(66000, dailyAvg));
+
+      // 지급 일수 (소정급여일수) 간단 추정
+      let days = 120;
+      if (period >= 10) days = age >= 50 ? 270 : 240;
+      else if (period >= 5) days = age >= 50 ? 240 : 210;
+
+      const total = Math.floor(dailyPay * days);
+      document.getElementById('resTotal').innerText = total.toLocaleString() + ' 원';
+      document.getElementById('resDays').innerText = `소정 급여일수: ${days}일 (1일 지급액: ${Math.floor(dailyPay).toLocaleString()}원)`;
+      document.getElementById('resultCard').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
